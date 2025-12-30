@@ -198,7 +198,7 @@ export default function Navbar() {
             transition={{ duration: 0.2 }}
             className="md:hidden glass-panel border-t border-white/10 overflow-hidden"
           >
-            <div className="px-4 pt-4 pb-6 space-y-2">
+            <div className="px-4 pt-4 pb-6 space-y-2 max-h-[calc(100vh-5rem)] overflow-y-auto custom-scrollbar">
               {menuItems.map(item => (
                 <button
                   key={item}
@@ -280,8 +280,8 @@ export default function Navbar() {
               {user && (
                 <Button
                   variant="danger"
-                  size="lg"
-                  className="mt-2 w-full"
+                  size="md"
+                  className="mt-2 w-full h-12"
                   onClick={() => setLogoutModalOpen(true)}
                 >
                   Logout
