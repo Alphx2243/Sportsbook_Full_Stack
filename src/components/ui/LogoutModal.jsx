@@ -12,7 +12,7 @@ export default function LogoutModal({ isOpen, onClose, onConfirm }) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+                className="fixed inset-0 w-screen h-screen z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
                 onClick={onClose}
             >
                 <motion.div
@@ -23,7 +23,6 @@ export default function LogoutModal({ isOpen, onClose, onConfirm }) {
                     className="relative w-full max-w-sm overflow-hidden glass-panel rounded-2xl shadow-2xl border border-white/10 mx-auto"
                     onClick={(e) => e.stopPropagation()}
                 >
-                    {/* Header/Banner */}
                     <div className="h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500" />
 
                     <button
