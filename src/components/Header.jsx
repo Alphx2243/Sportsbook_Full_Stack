@@ -83,7 +83,6 @@ export default function Navbar() {
     <nav className="fixed inset-x-0 top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-white/10 dark:border-white/10 border-black/5 shadow-lg">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo + links */}
           <div className="flex items-center">
             <Link href="/" className="text-2xl font-bold text-gradient-premium tracking-tighter">
               SportsBook
@@ -158,7 +157,6 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Actions */}
           <div className="flex items-center space-x-4">
             <button
               onClick={toggleTheme}
@@ -280,12 +278,14 @@ export default function Navbar() {
                 {user ? 'Edit Profile' : 'Login'}
               </button>
               {user && (
-                <button
+                <Button
+                  variant="danger"
+                  size="lg"
+                  className="mt-2 w-full"
                   onClick={() => setLogoutModalOpen(true)}
-                  className="mt-2 block w-full text-center px-3 py-3 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20 font-bold cursor-pointer hover:bg-red-500/20 transition-all"
                 >
                   Logout
-                </button>
+                </Button>
               )}
             </div>
           </motion.div>
