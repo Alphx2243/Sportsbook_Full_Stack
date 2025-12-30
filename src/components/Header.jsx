@@ -275,7 +275,7 @@ export default function Navbar() {
                   navigateTo(user ? '/profile' : '/login')
                   setMobileOpen(false)
                 }}
-                className="mt-4 block w-full text-center px-3 py-3 rounded-lg bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-bold cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all"
+                className="mt-4 block w-full text-center px-3 py-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_-5px_var(--color-primary)] text-white font-bold cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all"
               >
                 {user ? 'Edit Profile' : 'Login'}
               </button>
