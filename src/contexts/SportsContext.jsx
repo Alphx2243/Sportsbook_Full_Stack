@@ -26,14 +26,27 @@ export const SportsProvider = ({ children }) => {
 
     useEffect(() => {
         fetchSports();
-        const socket = io();
-        socket.on("connect", () => { console.log("Connected to socket server"); });
-        socket.on("OCCUPANCY_UPDATE", () => {
-            console.log("Received OCCUPANCY_UPDATE, refreshing sports...");
-            fetchSports(true);
-        });
+        let socket;
+        try {
+            socket = io();
+            socket.on("connect", () => {
+                console.log("Connected to socket server");
+            });
+
+            socket.on("connect_error", (error) => {
+                console.error("Socket connection error:", error);
+            });
+
+            socket.on("OCCUPANCY_UPDATE", () => {
+                console.log("Received OCCUPANCY_UPDATE, refreshing sports...");
+                fetchSports(true);
+            });
+        } catch (error) {
+            console.error("Failed to initialize socket:", error);
+        }
+
         return () => {
-            socket.disconnect();
+            if (socket) socket.disconnect();
         };
     }, [])
 
