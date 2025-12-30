@@ -9,7 +9,7 @@ import service from '@/lib/service'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTheme } from '@/contexts/ThemeContext'
 import LogoutModal from './ui/LogoutModal'
-
+import Button from './ui/Button'
 export default function Navbar() {
   const router = useRouter()
   const { user, logout } = useAuth()
