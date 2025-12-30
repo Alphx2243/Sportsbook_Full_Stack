@@ -73,3 +73,47 @@ export async function getSports() {
         console.error('Get sports error:', error); return { documents: [], total: 0 }
     }
 }
+
+export async function getSportAnalytics(sportName) {
+    try {
+        const today = new Date();
+        const dates = Array.from({ length: 7 }, (_, i) => {
+            const d = new Date(today);
+            d.setDate(today.getDate() - (6 - i));
+            return d.toISOString().split('T')[0];
+        });
+
+        const bookings = await prisma.booking.findMany({
+            where: {
+                sportName: sportName,
+                date: { in: dates }
+            }
+        });
+
+        const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const weeklyAttendance = dates.map(date => {
+            const dateObj = new Date(date);
+            const dayName = days[dateObj.getDay()];
+            const dayBookings = bookings.filter(b => b.date === date);
+            const totalPlayers = dayBookings.reduce((sum, b) => sum + (b.numberOfPlayers || 0), 0);
+            return { day: dayName, Students: totalPlayers };
+        });
+
+        const timeSlots = ["06-08", "08-10", "10-12", "12-14", "14-16", "16-18", "18-20", "20-22"];
+        const peakHours = timeSlots.map(slot => {
+            const [startHour, endHour] = slot.split('-').map(Number);
+            const slotBookings = bookings.filter(b => {
+                const hour = parseInt(b.startTime.split(':')[0]);
+                return hour >= startHour && hour < endHour;
+            });
+            const totalUsersInSlot = slotBookings.reduce((sum, b) => sum + (b.numberOfPlayers || 0), 0);
+            return { time: slot, Users: Math.round(totalUsersInSlot / 7) };
+        });
+
+        return { weeklyAttendance, peakHours };
+    }
+    catch (error) {
+        console.error('Get sport analytics error:', error);
+        return { weeklyAttendance: [], peakHours: [] };
+    }
+}

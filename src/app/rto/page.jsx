@@ -201,21 +201,25 @@ const DataAnalysis = ({ sport }) => {
   const { theme } = useTheme();
   const [weeklyData, setWeeklyData] = useState([]);
   const [peakData, setPeakData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const isDark = theme === 'dark';
 
   useEffect(() => {
-    if (!sport) return;
-    const today = new Date();
-    const dates = Array.from({ length: 7 }, (_, i) => {
-      const d = new Date(today);
-      d.setDate(today.getDate() - (6 - i));
-      return d.toISOString().slice(0, 10);
-    });
-
-    setWeeklyData(dates.map((d, i) => ({ day: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][i], Students: Math.floor(Math.random() * 40) })));
-    setPeakData(
-      ["06-08", "08-10", "10-12", "12-14", "14-16", "16-18", "18-20", "20-22"].map(t => ({ time: t, Users: Math.floor(Math.random() * 60) }))
-    )
+    async function fetchData() {
+      if (!sport) return;
+      setLoading(true);
+      try {
+        const { getSportAnalytics } = await import("@/actions/sports");
+        const data = await getSportAnalytics(sport);
+        setWeeklyData(data.weeklyAttendance);
+        setPeakData(data.peakHours);
+      } catch (error) {
+        console.error("Failed to fetch analytics:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
   }, [sport]);
 
   const chartColors = {
@@ -225,6 +229,14 @@ const DataAnalysis = ({ sport }) => {
     tooltipBorder: isDark ? "#333" : "#eee",
     grid: isDark ? "#333" : "#eee",
     bar: "#3b82f6"
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-20">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
   return (
