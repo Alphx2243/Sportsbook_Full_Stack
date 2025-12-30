@@ -15,7 +15,7 @@ async function main() {
             totalEquipments: ['Racket:20', 'Shuttle:50'],
             equipmentsInUse: ['Racket:0', 'Shuttle:0'],
             courtsInUse: 0,
-            numPlayers: 4,
+            numPlayers: 0,
             courtData: ['Court 1', 'Court 2', 'Court 3'],
         },
         {
@@ -24,7 +24,7 @@ async function main() {
             totalEquipments: ['Racket:10', 'Ball:20'],
             equipmentsInUse: ['Racket:0', 'Ball:0'],
             courtsInUse: 0,
-            numPlayers: 2,
+            numPlayers: 0,
             courtData: ['Court 1', 'Court 2'],
         },
         {
@@ -33,7 +33,7 @@ async function main() {
             totalEquipments: ['Racket:20', 'Ball:50'],
             equipmentsInUse: ['Racket:0', 'Ball:0'],
             courtsInUse: 0,
-            numPlayers: 4,
+            numPlayers: 0,
             courtData: ['Table 1', 'Table 2', 'Table 3', 'Table 4'],
         },
         {
@@ -42,7 +42,7 @@ async function main() {
             totalEquipments: ['Racket:15', 'Ball:40'],
             equipmentsInUse: ['Racket:0', 'Ball:0'],
             courtsInUse: 0,
-            numPlayers: 4,
+            numPlayers: 0,
             courtData: ['Court 1', 'Court 2'],
         },
         {
@@ -50,7 +50,7 @@ async function main() {
             numberOfCourts: 1,
             totalEquipments: [],
             maxCapacity: 20,
-            totalEquipments: [],
+
             equipmentsInUse: [],
             courtsInUse: 0,
             numPlayers: 0,
