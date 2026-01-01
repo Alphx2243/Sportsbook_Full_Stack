@@ -8,6 +8,7 @@ const adapter = new PrismaPg(pool)
 const prisma = new PrismaClient({ adapter })
 
 async function main() {
+    console.log("DATABASE URL:", process.env.DATABASE_URL);
     const sports = [
         {
             name: 'Badminton',
