@@ -275,6 +275,8 @@ export async function secureBooking(data) {
                     where: { id: sport.id }, data: { numPlayers: { increment: numPlayers } }
                 })
             }
+            // console.log("Data=> ", data.endTime);
+
             const booking = await tx.booking.create({
                 data: {
                     userId: data.userId, sportName: data.sportName,

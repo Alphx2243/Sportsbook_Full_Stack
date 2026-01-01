@@ -75,11 +75,13 @@ export default function AgniCodersBooking() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const now = new Date();
-      const currentdate = now.toISOString().split("T")[0];
+      const now = new Date(); // crct
+      // console.log("Date Now -> ", now);
+      const currentdate = now.toLocaleDateString("en-CA");
+      console.log("Date Now -> ", currentdate);
       const currenttime = now.toTimeString().split(" ")[0];
       const endDateTime = new Date(now.getTime() + 60 * 60 * 1000);
-      const Enddate = endDateTime.toISOString().split("T")[0];
+      const Enddate = endDateTime.toLocaleDateString("en-CA");
       const Endtime = endDateTime.toTimeString().split(" ")[0];
 
       const selectedSport = sportsData[selectedIndex];
@@ -92,8 +94,7 @@ export default function AgniCodersBooking() {
           .map(([name, count]) => {
             const diff = count - (initialInUse[name] || 0);
             return diff > 0 ? `${name}:${diff}` : null;
-          })
-          .filter(Boolean),
+          }).filter(Boolean),
         numberOfPlayers: numPlayers,
         startTime: currenttime,
         endTime: Endtime,
@@ -112,7 +113,7 @@ export default function AgniCodersBooking() {
           ),
         }),
       };
-
+      console.log(payload);
       const result = await service.secureBooking(payload);
 
       if (result.success) {
