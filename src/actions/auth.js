@@ -121,7 +121,9 @@ export async function getUsers() {
 
 export async function requestPasswordReset(email) {
     try {
+        console.log("Request Password Reset function Line 124");
         const user = await prisma.user.findUnique({ where: { email } });
+        console.log("Request Password Reset function Line 126");
         if (!user) {
             return { success: true, message: "If an account exists with this email, a reset link has been sent." };
         }
@@ -129,6 +131,7 @@ export async function requestPasswordReset(email) {
         const token = uuidv4();
         const expiry = new Date(Date.now() + 3600000); // 1 hour
 
+        console.log("Request Password Reset function Line 134");
         await prisma.user.update({
             where: { id: user.id },
             data: {
@@ -136,10 +139,13 @@ export async function requestPasswordReset(email) {
                 resetTokenExpiry: expiry,
             },
         });
+        console.log("Request Password Reset function Line 142");
 
         const resetLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
 
+        console.log("Request Password Reset function Line 146");
         await sendResetEmail(email, resetLink);
+        console.log("Request Password Reset function Line 148");
 
         return { success: true, message: "Reset link sent to your email." };
     } catch (error) {
@@ -150,18 +156,22 @@ export async function requestPasswordReset(email) {
 
 export async function resetPassword(token, newPassword) {
     try {
+        console.log("resetPassword Function Line 153");
         const user = await prisma.user.findFirst({
             where: {
                 resetToken: token,
                 resetTokenExpiry: { gt: new Date() },
             },
         });
+        console.log("resetPassword Function Line 160");
 
         if (!user) {
             return { success: false, error: "Invalid or expired reset token." };
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, 10);
+        console.log("resetPassword Function Line 167");
+
 
         await prisma.user.update({
             where: { id: user.id },
@@ -172,6 +182,7 @@ export async function resetPassword(token, newPassword) {
             },
         });
 
+        console.log("resetPassword Function Line 177");
         return { success: true, message: "Password updated successfully." };
     } catch (error) {
         console.error("Reset password error:", error);
@@ -181,7 +192,7 @@ export async function resetPassword(token, newPassword) {
 
 async function sendResetEmail(email, link) {
     const nodemailer = require('nodemailer');
-
+    console.log("sendResetEmail Function Line 195");
     const transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
         port: parseInt(process.env.SMTP_PORT),
@@ -197,20 +208,21 @@ async function sendResetEmail(email, link) {
         to: email,
         subject: "Password Reset Request",
         html: `
-            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-                <h2 style="color: #3b82f6;">Password Reset</h2>
-                <p>Hello,</p>
-                <p>You requested a password reset for your SportsBook account. Click the button below to reset it. This link will expire in 1 hour.</p>
-                <div style="text-align: center; margin: 30px 0;">
-                    <a href="${link}" style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">Reset Password</a>
-                </div>
-                <p>If you didn't request this, you can safely ignore this email.</p>
-                <p>Best regards,<br>The SportsBook Team</p>
-                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-                <p style="font-size: 12px; color: #666;">If the button doesn't work, copy and paste this link: <br> ${link}</p>
-            </div>
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+        <h2 style="color: #3b82f6;">Password Reset</h2>
+        <p>Hello,</p>
+        <p>You requested a password reset for your SportsBook account. Click the button below to reset it. This link will expire in 1 hour.</p>
+        <div style="text-align: center; margin: 30px 0;">
+        <a href="${link}" style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">Reset Password</a>
+        </div>
+        <p>If you didn't request this, you can safely ignore this email.</p>
+        <p>Best regards,<br>The SportsBook Team</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+        <p style="font-size: 12px; color: #666;">If the button doesn't work, copy and paste this link: <br> ${link}</p>
+        </div>
         `,
     });
+    console.log("sendResetEmail Function Line 207");
 }
 
 async function createSession(user) {
