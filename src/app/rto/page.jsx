@@ -45,9 +45,11 @@ const OccupancyCard = ({ info }) => {
   if (!info || !info.equipmentsInUse) return null;
   const eqInUse = parseList(info.equipmentsInUse);
   const totalPlayers = info.numPlayers || 0;
-  const rate = info.numberOfCourts
-    ? Math.round((info.courtsInUse / info.numberOfCourts) * 100)
-    : 0;
+  const rate = info.maxCapacity
+    ? Math.round(((info.numPlayers || 0) / info.maxCapacity) * 100)
+    : info.numberOfCourts
+      ? Math.round((info.courtsInUse / info.numberOfCourts) * 100)
+      : 0;
 
   const statusColor = rate < 50 ? "text-green-500" : rate < 80 ? "text-yellow-500" : "text-red-500";
   const statusBg = rate < 50 ? "bg-green-500/10 border-green-500/20" : rate < 80 ? "bg-yellow-500/10 border-yellow-500/20" : "bg-red-500/10 border-red-500/20";
@@ -143,26 +145,46 @@ const CourtVisualization = ({ info }) => {
   );
 };
 
-const OccupancyLocation = ({ info }) => (
-  <div className="glass-panel w-full max-w-4xl mx-auto p-6 rounded-2xl mt-8">
-    <h3 className="text-primary text-xl font-bold mb-4 flex items-center gap-2">
-      COURT STATUS
-    </h3>
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      {(info.courtData || [])
-        .map((c, i) => {
+const OccupancyLocation = ({ info }) => {
+  console.log(info);
+  if (info && (info.name?.toLowerCase() !== "gym") && (info.name?.toLowerCase() !== "swimming")) return (
+    <div className="glass-panel w-full max-w-4xl mx-auto p-6 rounded-2xl mt-8">
+      <h3 className="text-primary text-xl font-bold mb-4 flex items-center gap-2">
+        COURT STATUS
+      </h3>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {(info.courtData || []).map((c, i) => {
           const [name, status] = c.split(":");
-          const isOccupied = status === "1";
+          const isOccupied = info.maxCapacity
+            ? info.numPlayers > 0
+            : status === "1";
+
           return (
-            <div key={i} className={`p-4 rounded-xl border ${isOccupied ? 'bg-red-500/10 border-red-500/30' : 'bg-green-500/10 border-green-500/30'} flex flex-col items-center justify-center text-center transition-all`}>
-              <span className={`text-lg font-bold ${isOccupied ? 'text-red-400' : 'text-green-400'}`}>{name}</span>
-              <span className="text-xs text-gray-400 mt-1">{isOccupied ? 'Occupied' : 'Vacant'}</span>
+            <div
+              key={i}
+              className={`p-4 rounded-xl border ${isOccupied
+                ? "bg-red-500/10 border-red-500/30"
+                : "bg-green-500/10 border-green-500/30"
+                } flex flex-col items-center justify-center text-center transition-all`}
+            >
+              <span
+                className={`text-lg font-bold ${isOccupied ? "text-red-400" : "text-green-400"
+                  }`}
+              >
+                {name}
+              </span>
+              <span className="text-xs text-gray-400 mt-1">
+                {isOccupied ? "Occupied" : "Vacant"}
+              </span>
             </div>
-          )
+          );
         })}
+      </div>
     </div>
-  </div>
-);
+  );
+  else return null;
+};
+
 
 const TimeTable = ({ sport }) => {
   const [url, setUrl] = useState(null);
@@ -291,11 +313,11 @@ export default function Occupancy() {
       socket = io();
 
       socket.on("connect", () => {
-        console.log("Connected to WebSocket");
+        // console.log("Connected to WebSocket");
       });
 
       socket.on("OCCUPANCY_UPDATE", () => {
-        console.log("Real-time occupancy update received");
+        // console.log("Real-time occupancy update received");
         refreshSports(true);
       });
     }

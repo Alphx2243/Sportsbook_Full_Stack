@@ -156,15 +156,14 @@ export async function expireBooking(bookingId) {
         })
         const courtNo = booking.courtNo
         let newCourtData = sport.courtData || []
-        if (Array.isArray(newCourtData)) {
-            newCourtData = newCourtData.map(item => {
-                const [name, flag] = item.split(':')
-                const normalizedName = name.replace(/\s/g, '').toLowerCase()
-                const targetNormalizedName = `Court${courtNo}`.replace(/\s/g, '').toLowerCase()
-                if (normalizedName === targetNormalizedName) return `${name}:0`
-                return item
-            })
-        }
+        newCourtData = newCourtData.map((item, i) => {
+            const targetIndex = parseInt(courtNo) - 1
+            if (i === targetIndex) {
+                const name = item.split(':')[0]
+                return `${name}:0`
+            }
+            return item
+        })
         const issuedEq = booking.issuedEquipments || []
         let newEqInUse = sport.equipmentsInUse || []
         newEqInUse = [...newEqInUse]
@@ -231,7 +230,8 @@ export async function secureBooking(data) {
 
                 const currentCData = cData.length ? cData : Array.from({ length: sport.numberOfCourts }, (_, i) => `Court${i + 1}:0`)
                 const newCourtData = currentCData.map((item, i) => {
-                    if (i === courtIndex) return `Court${i + 1}:1`
+                    const name = item.split(':')[0]
+                    if (i === courtIndex) return `${name}:1`
                     return item
                 })
 

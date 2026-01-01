@@ -256,6 +256,15 @@ export default function AuthPage() {
                       </button>
                     </div>
                   </div>
+                  <div className="flex justify-end pt-1">
+                    <button
+                      type="button"
+                      onClick={() => router.push("/forgot-password")}
+                      className="text-xs text-primary hover:text-primary/80 transition cursor-pointer"
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
                   <Button
                     type="submit"
                     variant="primary"

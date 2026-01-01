@@ -34,7 +34,7 @@ async function main() {
             equipmentsInUse: ['Racket:0', 'Ball:0'],
             courtsInUse: 0,
             numPlayers: 0,
-            courtData: ['Table 1', 'Table 2', 'Table 3', 'Table 4'],
+            courtData: ['Table 1:0', 'Table 2:0', 'Table 3:0', 'Table 4:0'],
         },
         {
             name: 'Tennis',
@@ -83,7 +83,10 @@ async function main() {
                 data: {
                     maxCapacity: sport.maxCapacity,
                     courtData: sport.courtData,
-                    numberOfCourts: sport.numberOfCourts
+                    numberOfCourts: sport.numberOfCourts,
+                    courtsInUse: 0,
+                    numPlayers: 0,
+                    equipmentsInUse: sport.equipmentsInUse || [],
                 }
             })
             console.log(`Updated sport: ${sport.name}`)

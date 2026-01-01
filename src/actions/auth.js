@@ -119,6 +119,100 @@ export async function getUsers() {
     }
 }
 
+export async function requestPasswordReset(email) {
+    try {
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user) {
+            return { success: true, message: "If an account exists with this email, a reset link has been sent." };
+        }
+
+        const token = uuidv4();
+        const expiry = new Date(Date.now() + 3600000); // 1 hour
+
+        await prisma.user.update({
+            where: { id: user.id },
+            data: {
+                resetToken: token,
+                resetTokenExpiry: expiry,
+            },
+        });
+
+        const resetLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
+
+        await sendResetEmail(email, resetLink);
+
+        return { success: true, message: "Reset link sent to your email." };
+    } catch (error) {
+        console.error("Request password reset error:", error);
+        return { success: false, error: "Failed to process request." };
+    }
+}
+
+export async function resetPassword(token, newPassword) {
+    try {
+        const user = await prisma.user.findFirst({
+            where: {
+                resetToken: token,
+                resetTokenExpiry: { gt: new Date() },
+            },
+        });
+
+        if (!user) {
+            return { success: false, error: "Invalid or expired reset token." };
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        await prisma.user.update({
+            where: { id: user.id },
+            data: {
+                password: hashedPassword,
+                resetToken: null,
+                resetTokenExpiry: null,
+            },
+        });
+
+        return { success: true, message: "Password updated successfully." };
+    } catch (error) {
+        console.error("Reset password error:", error);
+        return { success: false, error: "Failed to reset password." };
+    }
+}
+
+async function sendResetEmail(email, link) {
+    const nodemailer = require('nodemailer');
+
+    const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT),
+        secure: process.env.SMTP_PORT === '465',
+        auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+        },
+    });
+
+    await transporter.sendMail({
+        from: process.env.SMTP_FROM || '"SportsBook" <noreply@sportsbook.com>',
+        to: email,
+        subject: "Password Reset Request",
+        html: `
+            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+                <h2 style="color: #3b82f6;">Password Reset</h2>
+                <p>Hello,</p>
+                <p>You requested a password reset for your SportsBook account. Click the button below to reset it. This link will expire in 1 hour.</p>
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="${link}" style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">Reset Password</a>
+                </div>
+                <p>If you didn't request this, you can safely ignore this email.</p>
+                <p>Best regards,<br>The SportsBook Team</p>
+                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+                <p style="font-size: 12px; color: #666;">If the button doesn't work, copy and paste this link: <br> ${link}</p>
+            </div>
+        `,
+    });
+}
+
 async function createSession(user) {
     const token = await new SignJWT({ userId: user.id, email: user.email })
         .setProtectedHeader({ alg: 'HS256' })

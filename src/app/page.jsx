@@ -223,10 +223,21 @@ export default function Home() {
                           <div>
                             <p className="text-sm text-muted-foreground mb-1">Overall Status</p>
                             <div className="flex items-center gap-2">
-                              <div className={`w-2 h-2 rounded-full ${selected.numberOfCourts - selected.courtsInUse > 0 ? 'bg-green-500 shadow-[0_0_10px_#22c55e]' : 'bg-red-500'}`} />
-                              <span className="text-foreground font-medium">
-                                {selected.numberOfCourts - selected.courtsInUse} / {selected.numberOfCourts} Available
-                              </span>
+                              {selected.maxCapacity ? (
+                                <>
+                                  <div className={`w-2 h-2 rounded-full ${(selected.numPlayers || 0) < selected.maxCapacity ? 'bg-green-500 shadow-[0_0_10px_#22c55e]' : 'bg-red-500'}`} />
+                                  <span className="text-foreground font-medium">
+                                    {selected.maxCapacity - (selected.numPlayers || 0)} / {selected.maxCapacity} Available
+                                  </span>
+                                </>
+                              ) : (
+                                <>
+                                  <div className={`w-2 h-2 rounded-full ${selected.numberOfCourts - selected.courtsInUse > 0 ? 'bg-green-500 shadow-[0_0_10px_#22c55e]' : 'bg-red-500'}`} />
+                                  <span className="text-foreground font-medium">
+                                    {selected.numberOfCourts - selected.courtsInUse} / {selected.numberOfCourts} Available
+                                  </span>
+                                </>
+                              )}
                             </div>
                           </div>
                           <Button
@@ -240,25 +251,32 @@ export default function Home() {
 
                         {selected.courtData && selected.courtData.length > 0 && (
                           <div className="pt-4 border-t border-white/5 dark:border-white/5 border-black/5">
-                            <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-3">Court Availability</p>
-                            <div className="grid grid-cols-3 gap-2">
-                              {selected.courtData.map((c, i) => {
-                                const [name, status] = c.split(':');
-                                const isOccupied = status === '1';
-                                return (
-                                  <div
-                                    key={i}
-                                    className={`px-3 py-2 rounded-lg border text-[10px] font-bold text-center transition-all ${isOccupied
-                                      ? 'bg-red-500/10 border-red-500/20 text-red-400'
-                                      : 'bg-green-500/10 border-green-500/20 text-green-400'
-                                      }`}
-                                  >
-                                    <div className="truncate">{name.replace('Court', 'C')}</div>
-                                    <div className="opacity-50 font-medium">{isOccupied ? 'BUSY' : 'FREE'}</div>
+                            {
+                              selected && selected.name?.toLowerCase() !== "gym" && selected.name?.toLowerCase() !== "swimming" && (
+                                <>
+                                  <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-3">Court Availability</p>
+                                  <div className="grid grid-cols-3 gap-2">
+                                    {selected.courtData.map((c, i) => {
+                                      const [name, status] = c.split(':');
+                                      const isOccupied = selected.maxCapacity ? (selected.numPlayers > 0) : (status === '1');
+                                      return (
+                                        <div
+                                          key={i}
+                                          className={`px-3 py-2 rounded-lg border text-[10px] font-bold text-center transition-all ${isOccupied
+                                            ? 'bg-red-500/10 border-red-500/20 text-red-400'
+                                            : 'bg-green-500/10 border-green-500/20 text-green-400'
+                                            }`}
+                                        >
+                                          <div className="truncate">{name.replace('Court', 'C')}</div>
+                                          <div className="opacity-50 font-medium">{isOccupied ? 'BUSY' : 'FREE'}</div>
+                                        </div>
+                                      );
+                                    })}
                                   </div>
-                                );
-                              })}
-                            </div>
+                                </>
+                              )
+                            }
+
                           </div>
                         )}
                       </div>

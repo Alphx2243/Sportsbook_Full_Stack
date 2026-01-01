@@ -99,7 +99,7 @@ export default function AgniCodersBooking() {
         endTime: Endtime,
         date: currentdate,
         status: "active",
-        CourtNo: isCapacityBased ? "0" : String(selectedCourt.replace("Court", "")),
+        CourtNo: isCapacityBased ? "0" : String(selectedCourt.match(/(\d+)/)?.[0] || "0"),
         enddate: Enddate,
         qrdetail: JSON.stringify({
           name: user.name,
@@ -147,7 +147,7 @@ export default function AgniCodersBooking() {
   const isCapacityBased = selectedSportData?.maxCapacity && selectedSportData.maxCapacity > 0;
 
   const availableCourts = isCapacityBased
-    ? (selectedSportData.maxCapacity - (selectedSportData.numPlayers || 0)) // Available spots
+    ? (selectedSportData.maxCapacity - (selectedSportData.numPlayers || 0))
     : (selectedSportData?.numberOfCourts || 0) - (selectedSportData?.courtsInUse || 0);
 
   return (

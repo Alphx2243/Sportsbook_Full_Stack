@@ -16,6 +16,8 @@ model User {
   rollNumber       String
   qrCodePath       String?
   sportsExperience String[]
+  resetToken       String?
+  resetTokenExpiry DateTime?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
