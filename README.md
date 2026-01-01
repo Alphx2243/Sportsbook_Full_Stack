@@ -66,6 +66,10 @@
     ```
     Your portal is now live at `http://localhost:3000`!
 ---
+
+### Note
+The password reset functionality uses Nodemailer. However, since Render blocks SMTP traffic, this feature does not work and results in a connection timeout error.
+
 ## 👨‍💻 Developed By
 **[Kunal Budhiraja]**
 ---

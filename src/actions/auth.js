@@ -122,7 +122,7 @@ export async function getUsers() {
 export async function requestPasswordReset(email) {
     try {
         console.log("Request Password Reset function Line 124");
-        const user = await prisma.user.findUnique({ where: { email } });
+        const user = await prisma.user.findUnique({ where: { email } }); // fine
         console.log("Request Password Reset function Line 126");
         if (!user) {
             return { success: true, message: "If an account exists with this email, a reset link has been sent." };
@@ -132,7 +132,7 @@ export async function requestPasswordReset(email) {
         const expiry = new Date(Date.now() + 3600000); // 1 hour
 
         console.log("Request Password Reset function Line 134");
-        await prisma.user.update({
+        await prisma.user.update({  // fine
             where: { id: user.id },
             data: {
                 resetToken: token,
